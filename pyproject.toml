@@ -1,0 +1,16 @@
+[project]
+name = "django-jobboard"
+version = "0.1.0"
+description = "Job Board (Django + uv + Postgres via Docker Compose)"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "Django>=5.0,<6.0",
+  "djangorestframework>=3.14,<4",
+  "psycopg[binary]>=3.1",
+  "gunicorn>=21.2",
+  "python-dotenv>=1.0",
+  "dj-database-url>=2.2",
+]
+
+

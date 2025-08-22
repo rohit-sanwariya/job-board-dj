@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Django
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+media/
+staticfiles/
+.env
+
+# Django migrations (if you want to exclude auto-generated ones)
+**/migrations/__pycache__/
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# uv (virtual environment manager)
+.venv/
+.uv/
+.uv-cache/
+
+# Docker
+*.pid
+*.seed
+*.bak
+*.swp
+*.swo
+docker-compose.override.yml
+# Named volumes
+volumes/
+db_data/
+
+# VSCode / IDE
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
