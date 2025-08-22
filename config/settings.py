@@ -34,9 +34,8 @@ INSTALLED_APPS = [
 
     # Third-party
     "rest_framework",
-
+'rest_framework.authtoken',
     # Local apps
-    "accounts",
     "jobs",
      "users",  
 ]
@@ -97,6 +96,13 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
+# elastic search
+
+if os.environ.get('RUNNING_IN_DOCKER'):
+    ELASTICSEARCH_URL = "http://es:9200"  # Docker service name
+else:
+    ELASTICSEARCH_URL = "http://localhost:9200"
+
 
 # Internationalization
 LANGUAGE_CODE = "en-us"
@@ -123,7 +129,6 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 }

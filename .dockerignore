@@ -1,0 +1,17 @@
+# Ignore local environments
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Ignore git
+.git
+.gitignore
+
+# Ignore IDE files
+*.idea
+*.vscode

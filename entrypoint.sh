@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-# Wait for Postgres using psycopg in-process (no extra tools needed)
+echo "⏳ Checking database availability..."
+
 python <<'PY'
 import os, time, psycopg
 dsn = os.getenv("DATABASE_URL")
@@ -13,22 +14,33 @@ for i in range(60):
         with psycopg.connect(dsn, connect_timeout=5) as conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT 1;")
+        print("✅ Database is ready!")
         break
     except Exception:
+        print(f"⏳ Waiting for DB... attempt {i+1}/60")
         time.sleep(1)
 else:
-    raise SystemExit("Database not reachable after 60s")
+    raise SystemExit("❌ Database not reachable after 60s")
 PY
 
-# Migrate & (optionally) collect static
+# In dev, also run makemigrations
+if [ "${DJANGO_DEBUG:-1}" = "1" ]; then
+  echo "🛠 Running makemigrations (dev only)..."
+  uv run python manage.py makemigrations --noinput
+fi
+
+echo "📦 Applying migrations..."
 uv run python manage.py migrate --noinput
+
 if [ "${DJANGO_COLLECTSTATIC:-0}" = "1" ]; then
+  echo "📂 Collecting static files..."
   uv run python manage.py collectstatic --noinput
 fi
 
-# Dev server vs gunicorn based on DEBUG
 if [ "${DJANGO_DEBUG:-1}" = "1" ]; then
+  echo "🚀 Starting Django development server..."
   exec uv run python manage.py runserver 0.0.0.0:8000
 else
+  echo "🚀 Starting Gunicorn (production)..."
   exec uv run gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers=${GUNICORN_WORKERS:-3}
 fi

@@ -13,6 +13,8 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - default
 
   web:
     build: .
@@ -22,8 +24,43 @@ services:
       - .:/app
     ports:
       - "8000:8000"
+    environment:
+      - RUNNING_IN_DOCKER=true
+      - DJANGO_DEBUG=1
+      - DJANGO_SECRET_KEY=dev-insecure-key
+      - DJANGO_ALLOWED_HOSTS=*
+      - DB_NAME=fastapidb
+      - DB_USER=fastapiuser
+      - DB_PASSWORD=secret
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DATABASE_URL=postgresql://fastapiuser:secret@db:5432/fastapidb
     depends_on:
       - db
+      - es
+    networks:
+      - default
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.2
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - default
 
 volumes:
   db_data:
+  es_data:
+
+networks:
+  default:
+    driver: bridge
